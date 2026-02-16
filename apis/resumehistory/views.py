@@ -65,7 +65,8 @@ class TailorResumeView(APIView):
 
         save_resume_history(request.user, resume_text, job_description, analysis_data)
         return return_response(
-            Res.SUCCESS, http_status.HTTP_200_OK, "Resume tailored", {
-                "ai_analysis": analysis_data
-            }
+            Res.SUCCESS,
+            http_status.HTTP_200_OK,
+            "Resume tailored",
+            {"ai_analysis": analysis_data},
         )

@@ -20,5 +20,5 @@ def save_resume_history(user, resume_text, job_description, ai_analysis):
         user=user,
         resume_text=resume_text[:1000],
         job_description=job_description[:1000],
-        ai_analysis=ai_analysis
+        ai_analysis=ai_analysis,
     )
