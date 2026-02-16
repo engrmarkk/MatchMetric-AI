@@ -19,15 +19,6 @@ class GeminiClient:
         return all_models
 
     def analyze_resume(self, resume_text, job_description):
-        # system_instruction = """
-        # You are a professional Resume Strategist.
-        # Compare the provided Resume with the Job Description.
-        # Return your response in clear sections:
-        # 1. Match Score (0-100)
-        # 2. Top 3 Missing Keywords
-        # 3. One specific sentence to improve.
-        # """
-
         response = self.client.models.generate_content(
             model=self.model,
             contents=f"Resume: {resume_text}\nJD: {job_description}",
@@ -38,15 +29,4 @@ class GeminiClient:
             ),
         )
 
-        # The SDK automatically parses the JSON into your Pydantic object
         return response.parsed
-
-        # response = self.client.models.generate_content(
-        #     model=self.model,
-        #     config=types.GenerateContentConfig(
-        #         system_instruction=system_instruction,
-        #         temperature=0.7,
-        #     ),
-        #     contents=[f"RESUME: {resume_text}\n\nJOB: {job_description}"]
-        # )
-        # return response.text
