@@ -1,16 +1,19 @@
-"""
-ASGI config for resumeai_proj project.
-
-It exposes the ASGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/5.2/howto/deployment/asgi/
-"""
-
 import os
-
+import django
 from django.core.asgi import get_asgi_application
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "resumeai_proj.settings")
+django.setup()
 
-application = get_asgi_application()
+django_http_app = get_asgi_application()
+
+from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.auth import AuthMiddlewareStack
+import apis.resumehistory.routing as routing
+
+application = ProtocolTypeRouter(
+    {
+        "http": django_http_app,
+        "websocket": AuthMiddlewareStack(URLRouter(routing.websocket_urlpatterns)),
+    }
+)
