@@ -1,5 +1,13 @@
 from pathlib import Path
-from api_services.environmentals import DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT
+from api_services.environmentals import (
+    DB_NAME,
+    DB_USER,
+    DB_PASSWORD,
+    DB_HOST,
+    DB_PORT,
+    REDIS_HOST,
+    REDIS_PORT,
+)
 from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,6 +30,8 @@ MY_APPS = ["apis.authentication", "apis.users", "apis.resumehistory", "apis.ping
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
+    "channels",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -141,7 +151,17 @@ REST_FRAMEWORK = {
     # ]
 }
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(REDIS_HOST, REDIS_PORT)],
+        },
+    },
+}
+
 AUTH_USER_MODEL = "users.User"
+ASGI_APPLICATION = "resumeai_proj.asgi.application"
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
