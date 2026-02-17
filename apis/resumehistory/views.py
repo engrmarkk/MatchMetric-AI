@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from api_services.const_response import return_response
 from api_services.status_messages import StatusResponse as Res
 import rest_framework.status as http_status
-from db_cruds import save_resume_history
+from db_cruds import save_resume_history, get_user_resume_histories
 from pdf_extract.pypdf_extractor import PyPDFExtractor
 from ai.google_genai import GeminiClient
 
@@ -31,7 +31,7 @@ class UploadResumeView(APIView):
         )
 
 
-# tailor resume view
+# tailor resume view (Use the Websocket instead of this)
 class TailorResumeView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
@@ -69,4 +69,22 @@ class TailorResumeView(APIView):
             http_status.HTTP_200_OK,
             "Resume tailored",
             {"ai_analysis": analysis_data},
+        )
+
+
+# get histories
+class GetHistoriesView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    # noinspection PyMethodMayBeStatic
+    def get(self, request) -> Response:
+        page = int(request.query_params.get("page", 1))
+        per_page = int(request.query_params.get("per_page", 10))
+        histories = get_user_resume_histories(request.user, page, per_page)
+        return return_response(
+            Res.SUCCESS,
+            http_status.HTTP_200_OK,
+            "Histories retrieved",
+            histories,
         )
