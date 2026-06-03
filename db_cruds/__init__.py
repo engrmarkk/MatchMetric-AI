@@ -26,7 +26,6 @@ def save_resume_history(user, resume_text, job_description, ai_analysis):
 
 
 def get_user_resume_histories(user, page, per_page):
-
     queryset = ResumeHistory.objects.filter(user=user).order_by("-created_at")
     paginator = Paginator(queryset, per_page)
 
