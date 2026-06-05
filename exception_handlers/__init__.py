@@ -1,11 +1,13 @@
 from rest_framework.views import exception_handler
 from api_services.status_messages import StatusResponse as Res
 from api_services.const_response import return_response
-
+from api_services.logger import logger
 
 def custom_exception_handler(exc, context):
     # Get the default response from DRF
     response = exception_handler(exc, context)
+    logger.error(f"Exception: {str(exc)}")
+    logger.error(f"Context: {context}")
 
     if response is not None:
         # Replace DRF's default format with my own
