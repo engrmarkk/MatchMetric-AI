@@ -24,5 +24,6 @@ class MyProfileView(APIView):
                 "email": user.email,
                 "first_name": user.first_name.title(),
                 "last_name": user.last_name.title(),
+                "session_id": request.session.session_key
             },
         )
