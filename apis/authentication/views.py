@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from api_services.const_response import return_response
 import rest_framework.status as http_status
+from django.contrib.auth import login
 from api_services.status_messages import StatusResponse as Res
 from api_services.utils import (
     get_tokens_for_user,
@@ -28,9 +29,14 @@ class LoginView(APIView):
         user = authenticate(email=email, password=password)
         if user is None:
             return return_response(
-                Res.FAILED, http_status.HTTP_400_BAD_REQUEST, "Invalid credentials"
+                Res.FAILED, http_status.HTTP_403_FORBIDDEN, "Invalid credentials"
             )
         token_dict = get_tokens_for_user(user)
+        login(request, user)
+        request.session.save()  # <-- This is critical
+        session_key = request.session.session_key
+        print(f"Session ID created: {session_key}")
+        token_dict.update({"session_id": session_key})
         return return_response(
             Res.SUCCESS, http_status.HTTP_200_OK, "Login successful", token_dict
         )
