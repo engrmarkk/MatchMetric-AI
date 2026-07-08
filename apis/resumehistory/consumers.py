@@ -7,6 +7,12 @@ from .models import ResumeHistory
 
 class ResumeConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        headers = dict(self.scope.get('headers', []))
+        print(f"Headers: {headers}")
+
+        # Check if cookie header is present
+        cookie_header = headers.get(b'cookie', b'').decode()
+        print(f"Cookie header: {cookie_header}")
         user = self.scope["user"]
         print(f"WebSocket connecting: User is {user}")
         if not user.is_authenticated:
