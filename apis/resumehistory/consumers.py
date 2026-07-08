@@ -88,7 +88,7 @@ class ResumeConsumer(AsyncWebsocketConsumer):
         user = await self.get_user_from_session(session_id)
 
         if user and not user.is_anonymous:
-            print(f"✅ WebSocket authenticated: {user.username} (ID: {user.id})")
+            print(f"✅ WebSocket authenticated: {user.email} (ID: {user.id})")
             self.user = user
 
             # Set user in scope for other methods
@@ -100,7 +100,12 @@ class ResumeConsumer(AsyncWebsocketConsumer):
             # Send welcome message (optional)
             await self.send(text_data=json.dumps({
                 'type': 'connected',
-                'user': user.username,
+                'user': {
+                    'id': user.id,
+                    'email': user.email,
+                    'first_name': user.first_name,
+                    'last_name': user.last_name
+                },
                 'message': 'WebSocket connection established'
             }))
         else:
@@ -232,6 +237,6 @@ class ResumeConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         if hasattr(self, 'user') and self.user and not self.user.is_anonymous:
-            print(f"🔌 WebSocket disconnected: {self.user.username} (Code: {close_code})")
+            print(f"🔌 WebSocket disconnected: {self.user.email} (Code: {close_code})")
         else:
             print(f"🔌 WebSocket disconnected (Code: {close_code})")
