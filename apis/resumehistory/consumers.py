@@ -73,9 +73,9 @@ from .models import ResumeHistory
 class ResumeConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         # Get session_id from query string
-        query_string = self.scope['query_string'].decode()
+        query_string = self.scope["query_string"].decode()
         query_params = parse_qs(query_string)
-        session_id = query_params.get('session_id', [None])[0]
+        session_id = query_params.get("session_id", [None])[0]
 
         print(f"🔍 WebSocket connection attempt with session_id: {session_id}")
 
@@ -98,16 +98,20 @@ class ResumeConsumer(AsyncWebsocketConsumer):
             print("✅ WebSocket connection accepted")
 
             # Send welcome message (optional)
-            await self.send(text_data=json.dumps({
-                'type': 'connected',
-                'user': {
-                    'id': user.id,
-                    'email': user.email,
-                    'first_name': user.first_name,
-                    'last_name': user.last_name
-                },
-                'message': 'WebSocket connection established'
-            }))
+            await self.send(
+                text_data=json.dumps(
+                    {
+                        "type": "connected",
+                        "user": {
+                            "id": user.id,
+                            "email": user.email,
+                            "first_name": user.first_name,
+                            "last_name": user.last_name,
+                        },
+                        "message": "WebSocket connection established",
+                    }
+                )
+            )
         else:
             print(f"❌ WebSocket authentication failed for session: {session_id}")
             await self.close(code=4401)
@@ -123,6 +127,7 @@ class ResumeConsumer(AsyncWebsocketConsumer):
 
             # Check if session has expired
             from django.utils import timezone
+
             if session.expire_date < timezone.now():
                 print(f"⚠️ Session {session_key} has expired")
                 return None
@@ -131,7 +136,7 @@ class ResumeConsumer(AsyncWebsocketConsumer):
             session_data = session.get_decoded()
 
             # Get user ID from session
-            user_id = session_data.get('_auth_user_id')
+            user_id = session_data.get("_auth_user_id")
             print(f"User ID from session: {user_id}")
 
             if user_id:
@@ -165,10 +170,12 @@ class ResumeConsumer(AsyncWebsocketConsumer):
 
             if not resume_text or not job_desc:
                 await self.send(
-                    text_data=json.dumps({
-                        "status": "error",
-                        "message": "Missing resume_text or job_description"
-                    })
+                    text_data=json.dumps(
+                        {
+                            "status": "error",
+                            "message": "Missing resume_text or job_description",
+                        }
+                    )
                 )
                 return
 
@@ -189,35 +196,29 @@ class ResumeConsumer(AsyncWebsocketConsumer):
                 print(f"✅ Gemini analysis data: {analysis_data}")
 
                 await self.send(
-                    text_data=json.dumps({
-                        "status": "success",
-                        "ai_analysis": analysis_data
-                    })
+                    text_data=json.dumps(
+                        {"status": "success", "ai_analysis": analysis_data}
+                    )
                 )
 
             except Exception as e:
                 print(f"❌ Gemini analysis error: {str(e)}")
                 await self.send(
-                    text_data=json.dumps({
-                        "status": "failed",
-                        "message": str(e)
-                    })
+                    text_data=json.dumps({"status": "failed", "message": str(e)})
                 )
 
         except json.JSONDecodeError as e:
             await self.send(
-                text_data=json.dumps({
-                    "status": "error",
-                    "message": f"Invalid JSON: {str(e)}"
-                })
+                text_data=json.dumps(
+                    {"status": "error", "message": f"Invalid JSON: {str(e)}"}
+                )
             )
         except Exception as e:
             print(f"❌ Unexpected error: {str(e)}")
             await self.send(
-                text_data=json.dumps({
-                    "status": "error",
-                    "message": "Internal server error"
-                })
+                text_data=json.dumps(
+                    {"status": "error", "message": "Internal server error"}
+                )
             )
 
     @database_sync_to_async
@@ -228,7 +229,7 @@ class ResumeConsumer(AsyncWebsocketConsumer):
                 user=self.user,
                 resume_text=resume,
                 job_description=jd,
-                ai_analysis=analysis
+                ai_analysis=analysis,
             )
             print(f"✅ Resume history saved for user: {self.user.email}")
         except Exception as e:
@@ -236,7 +237,7 @@ class ResumeConsumer(AsyncWebsocketConsumer):
             raise
 
     async def disconnect(self, close_code):
-        if hasattr(self, 'user') and self.user and not self.user.is_anonymous:
+        if hasattr(self, "user") and self.user and not self.user.is_anonymous:
             print(f"🔌 WebSocket disconnected: {self.user.email} (Code: {close_code})")
         else:
             print(f"🔌 WebSocket disconnected (Code: {close_code})")
