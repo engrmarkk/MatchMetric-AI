@@ -3,6 +3,7 @@ from api_services.status_messages import StatusResponse as Res
 from api_services.const_response import return_response
 from api_services.logger import logger
 
+
 def custom_exception_handler(exc, context):
     # Get the default response from DRF
     response = exception_handler(exc, context)
