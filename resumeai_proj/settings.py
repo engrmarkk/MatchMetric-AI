@@ -92,6 +92,11 @@ CORS_ALLOW_HEADERS = (
 )
 CORS_PREFLIGHT_MAX_AGE = 86400
 
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_HTTPONLY = True
+CORS_ALLOW_CREDENTIALS = True
+
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
