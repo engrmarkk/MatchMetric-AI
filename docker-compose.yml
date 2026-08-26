@@ -1,10 +1,25 @@
 services:
   api:
     build: .
+    container_name: metric_api
     ports:
       - "8001:8001"
+    networks:
+      - metric_network
     volumes:
       - .:/app
     env_file:
       - .env
     command: gunicorn resumeai_proj.asgi:application --bind 0.0.0.0:8001 --worker-class uvicorn.workers.UvicornWorker --reload
+
+  redis:
+    image: redis:alpine
+    container_name: metric_redis
+    networks:
+      - metric_network
+    ports:
+      - "6388:6379"
+
+networks:
+  metric_network:
+    driver: bridge
